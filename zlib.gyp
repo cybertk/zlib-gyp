@@ -35,6 +35,13 @@
         ['OS == "android"', {
           # TODO(kyan): gyp does not support none type for Android NDK.
           'type': 'static_library',
+
+          # TODO(kyan): android need LD_FLAGS set with '-lz'.
+          'link_settings': {
+            'ldflags': [
+              '-lz',
+            ],
+          },
         }],
       ],
     },
