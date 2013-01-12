@@ -2,50 +2,87 @@
 {
   'variables': {
     'use_system_minizip%': 0,
+    'use_system_zlib': 0,
     'os_bsd%': 0,
   },
 
   'targets': [
     {
-      # Force use_system_zlib = 1.
       'target_name': 'zlib',
-      'type': 'none',
-
-      'direct_dependent_settings': {
-        'defines': [
-          'USE_SYSTEM_ZLIB', # For use with with minizip.
-        ],
-      },
-
+      'type': 'static_library',
       'conditions': [
-        ['OS == "ios"', {
-          'link_settings': {
-            'libraries': [
-              '$(SDKROOT)/usr/lib/libz.dylib',
-            ],
-          }
-        }, { # OS != 'ios'
-          'link_settings': {
-            'libraries': [
-              '-lz',
-            ],
-          }
-        }],
+        ['use_system_zlib == 0', {
+          'sources': [
+            'adler32.c',
+            'compress.c',
+            'crc32.c',
+            'crc32.h',
+            'deflate.c',
+            'deflate.h',
+            'gzio.c',
+            'infback.c',
+            'inffast.c',
+            'inffast.h',
+            'inffixed.h',
+            'inflate.c',
+            'inflate.h',
+            'inftrees.c',
+            'inftrees.h',
+            'mozzconf.h',
+            'trees.c',
+            'trees.h',
+            'uncompr.c',
+            'zconf.h',
+            'zlib.h',
+            'zutil.c',
+            'zutil.h',
+          ], # sources
 
-        ['OS == "android"', {
-          # TODO(kyan): gyp does not support none type for Android NDK.
-          'type': 'static_library',
-
-          # TODO(kyan): android need LD_FLAGS set with '-lz'.
-          'link_settings': {
-            'ldflags': [
-              '-lz',
+          'include_dirs': [
+            '.',
+          ],
+          'direct_dependent_settings': {
+            'include_dirs': [
+              '.',
             ],
           },
-        }],
-      ],
-    },
+        }, { # else, use_system_zlib == 1
+          'direct_dependent_settings': {
+            'defines': [
+              'USE_SYSTEM_ZLIB',
+            ],
+          },
+          'conditions': [
+            ['OS == "ios"', {
+              'link_settings': {
+                'libraries': [
+                  '$(SDKROOT)/usr/lib/libz.dylib',
+                ],
+              }
+            }, { # else, OS != 'ios'
+              'link_settings': {
+                'libraries': [
+                  '-lz',
+                ],
+              }
+            }], # condition #1, OS == 'ios'
 
+            ['OS == "android"', {
+              # TODO(kyan): gyp does not support none type for Android NDK.
+              'type': 'static_library',
+
+              # TODO(kyan): android need LD_FLAGS set with '-lz'.
+              'link_settings': {
+                'ldflags': [
+                  '-lz',
+                ],
+              },
+            }], # condition #2, OS == "android"
+
+          ], # condtions
+        }], # use_system_zlib == 0
+      ], # conditions
+    }, # target
     {
       'target_name': 'minizip',
       'type': 'static_library',
