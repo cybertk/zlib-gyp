@@ -91,6 +91,15 @@
       ],
       'conditions': [
         ['use_system_minizip == 0', {
+          'direct_dependent_settings': {
+            'include_dirs': [
+              '../..', # for third_party/zlib/zlib.h
+              'contrib/minizip',
+            ],
+          },
+          'include_dirs': [
+            '../..',
+          ],
           'sources': [
             'contrib/minizip/ioapi.c',
             'contrib/minizip/ioapi.h',
@@ -101,15 +110,6 @@
             'contrib/minizip/zip.c',
             'contrib/minizip/zip.h',
           ],
-          'include_dirs': [
-            '.',
-            '../..',
-          ],
-          'direct_dependent_settings': {
-            'include_dirs': [
-              '.',
-            ],
-          },
           'conditions': [
             ['OS != "win"', {
               'sources!': [
